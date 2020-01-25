@@ -3,6 +3,7 @@
 		<div class="panel-heading btn-group threedviewTabs" style="padding: 0px; width: 100%" data-toggle="buttons">
 			<label class="btn btn-default button3d active"> <input type="radio" name="options" id="option2" autocomplete="off" checked="checked"/>3D</label>
 			<label class="btn btn-default detailsLink"><input type="radio" name="options" id="option2" autocomplete="off">Project</label>
+			<label class="btn btn-default navgraph"><input type="radio" name="options" id="option2" autocomplete="off">Navigation Graph</label>
 			<label class="btn btn-default subprojectsLink"><input type="radio" name="options" id="option2" autocomplete="off">Subprojects</label>
 			<label class="btn btn-default revisionsLink"><input type="radio" name="options" id="option2" autocomplete="off">Revisions</label>
 			<label class="btn btn-default checkoutsLink"><input type="radio" name="options" id="option2" autocomplete="off">Checkouts</label>
@@ -22,6 +23,8 @@
 						<thead></thead>
 						<tbody></tbody>
 					</table>
+				</div>
+				<div class="tab-pane navgraphview">
 				</div>
 				<div class="tab-pane subprojects initialhide">
 					<div class="well well-sm nosubprojects">No sub projects</div>
@@ -214,6 +217,7 @@ function RightPanel(cd, main, project, projectPage) {
 	othis.models = {};
 	othis.selectedObject = null;
 
+
 	this.select = function(groupId, id){
 		o.selectListeners.forEach(function(listener){
 			listener(groupId, id);
@@ -262,6 +266,11 @@ function RightPanel(cd, main, project, projectPage) {
 		o.showThreeD(null, true);
 	});
 
+
+
+
+
+
 	this.close = function () {
 		if (othis.project != null) {
 			Global.bimServerApi.unregisterNewRevisionOnSpecificProjectHandler(othis.project.oid, othis.newRevisionOnSpecificProjectHandler);
@@ -308,21 +317,21 @@ function RightPanel(cd, main, project, projectPage) {
 			othis.loadProjectTree();
 		});
 	};
-	
+
 	this.undeleteProject = function(project){
 		Global.bimServerApi.callWithFullIndication("ServiceInterface", "undeleteProject", {poid: project.oid}, function(){
 			othis.loadSubProjects();
 			othis.loadProjectTree();
 		});
 	};
-	
+
 	this.addSubProject = function(subProject) {
 		var subProjectRow = $("<tr class=\"project\">");
 		subProjectRow.click(othis.projectClick);
 		subProjectRow.data("project", subProject);
-		
+
 		subProjectRow.append("<td>" + subProject.name + "</td>");
-		
+
 		var actions = newDropdownTd("Actions");
 
 		actions.find(".dropdown-toggle").click(function(){
@@ -349,7 +358,7 @@ function RightPanel(cd, main, project, projectPage) {
 
 		cd.find(".subprojectsTable").append(subProjectRow);
 	};
-	
+
 	this.loadSubProjects = function(callback) {
 		othis.tabChanger.changeTab($(".subprojectsLink"), null, $(".subprojects"), function(){
 			Global.bimServerApi.call("ServiceInterface", "getSubProjects", {poid: othis.project.oid}, function(data){
@@ -364,7 +373,7 @@ function RightPanel(cd, main, project, projectPage) {
 			return $(".subprojects");
 		}, callback);
 	};
-	
+
 	this.userRowClick = function(event) {
 		if (!$(event.target).is("a, button, span.caret")) {
 			main.showUser($(this).data("user"), null, true);
@@ -386,11 +395,11 @@ function RightPanel(cd, main, project, projectPage) {
 			othis.loadUsers();
 		});
 	};
-	
+
 	this.addUser = function(user) {
 		cd.find(".nousers").hide();
 		cd.find(".usersTable").show();
-		
+
 		var tr = $("<tr>");
 		tr.data("user", user);
 		tr.click(othis.userRowClick);
@@ -402,7 +411,7 @@ function RightPanel(cd, main, project, projectPage) {
 		}
 		cd.find(".usersTable").append(tr);
 	};
-	
+
 	this.addRevision = function(revision) {
 		cd.find(".norevisions").hide();
 		cd.find(".revisionsTable").show();
@@ -434,7 +443,7 @@ function RightPanel(cd, main, project, projectPage) {
 		revisionRow.append("<td>" + revision.size + "</td>");
 
 		var actions = newSplitDropDownTd("Download", othis.downloadCheckoutClick);
-		
+
 		actions.find("button.dropdown-toggle").click(function(){
 			Global.bimServerApi.call("ServiceInterface", "getAllServicesOfProject", {poid: othis.project.oid}, function(data){
 				actions.find("ul li").remove();
@@ -456,7 +465,7 @@ function RightPanel(cd, main, project, projectPage) {
 //					othis.share(revision.oid);
 //				});
 //				actions.find("ul").append(shareLi);
-				
+
 				Global.bimServerApi.call("ServiceInterface", "getAllNewServicesOfProject", {poid: othis.project.oid}, function(data){
 					actions.find("ul li.new").remove();
 					data.forEach(function(service){
@@ -477,11 +486,11 @@ function RightPanel(cd, main, project, projectPage) {
 //						othis.share(revision.oid);
 //					});
 //					actions.find("ul").append(shareLi);
-					
+
 				});
 			});
 		});
-		
+
 		revisionRow.append(actions);
 		cd.find(".revisionsTable tbody").prepend(revisionRow);
 	};
@@ -537,11 +546,11 @@ function RightPanel(cd, main, project, projectPage) {
 			});
 		}
 	};
-	
+
 	this.serviceClick = function(){
 		othis.showService($(this).data("service"));
 	};
-	
+
 	this.showService = function(callback) {
 		cd.find(".serviceList").hide();
 		cd.find(".newServiceList").hide();
@@ -572,7 +581,7 @@ function RightPanel(cd, main, project, projectPage) {
 		var service = $(this).parents("tr").data("service");
 		alert("Triggering service "  + service);
 	};
-	
+
 	this.deleteServiceClick = function(){
 		Global.bimServerApi.call("ServiceInterface", "removeServiceFromProject", {
 			poid: othis.project.oid,
@@ -590,7 +599,7 @@ function RightPanel(cd, main, project, projectPage) {
 			othis.loadServices();
 		});
 	};
-	
+
 	this.addService = function(service) {
 		cd.find(".noservices").hide();
 		cd.find(".servicesTable").show();
@@ -608,7 +617,7 @@ function RightPanel(cd, main, project, projectPage) {
 		tr.append(deleteTd);
 		cd.find(".servicesTable tbody").append(tr);
 	};
-	
+
 	this.authenticate = function(server, service){
 		url = new Url(document.location);
 		url.remove("poid");
@@ -625,7 +634,7 @@ function RightPanel(cd, main, project, projectPage) {
 //			document.location = forwardUrl;
 //		});
 
-		
+
 		var state = {
 			_poid: othis.project.oid,
 			_soid: service.oid,
@@ -633,15 +642,15 @@ function RightPanel(cd, main, project, projectPage) {
 			_serviceName: service.name,
 			_serviceOid: service.oid
 		}
-		
+
 		console.log(service);
-		
+
 		state = JSON.stringify(state);
 		url.state = state;
 		var uri = url.toString();
-		
+
 		var redirect_uri = encodeURIComponent(uri);
-		
+
 		document.location = service.authorizationUrl + "?client_id=" + encodeURIComponent(server.clientId) + "&response_type=code&state=" + encodeURIComponent(state) + "&auth_type=service&redirect_uri=" + redirect_uri;
 //		Global.bimServerApi.call("OAuthInterface", "generateForwardUrl", {
 //			registrationEndpoint: service.registerUrl,
@@ -654,7 +663,7 @@ function RightPanel(cd, main, project, projectPage) {
 //			document.location = forwardUrl;
 //		});
 	};
-	
+
 	this.registerApplication = function(service, callback){
 		var redirectUrl = document.location.origin + document.location.pathname + "?page=oauthresponse&tab=services";
 		Global.bimServerApi.call("OAuthInterface", "registerApplication", {
@@ -697,11 +706,11 @@ function RightPanel(cd, main, project, projectPage) {
 			});
 			actionsTd.append(" ");
 			actionsTd.append(authenticateLink);
-		}		
+		}
 		tr.append(actionsTd);
 		servicesDiv.find(".newServicesTable tbody").append(tr);
 	};
-	
+
 	this.removeModelChecker = function(){
 		Global.bimServerApi.call("ServiceInterface", "removeModelCheckerFromProject", {
 			poid: othis.project.oid,
@@ -727,11 +736,11 @@ function RightPanel(cd, main, project, projectPage) {
 		tr.append(td);
 		cd.find(".modelCheckersTable tbody").append(tr);
 	};
-	
+
 	this.loadExtendedData = function(callback, addToHistory, edid) {
 		var select = $(".extendeddata select");
 		select.find("option").remove();
-		
+
 		select.change(function(){
 			Global.bimServerApi.call("ServiceInterface", "getRevision", {roid: $(this).val()}, function(revision){
 				othis.selectedRevision = revision;
@@ -742,7 +751,7 @@ function RightPanel(cd, main, project, projectPage) {
 				}, callback);
 			});
 		});
-		
+
 		Global.bimServerApi.call("ServiceInterface", "getAllRevisionsOfProject", {poid: othis.project.oid}, function(data){
 			data.forEach(function(revision){
 				var option = $("<option value=\"" + revision.oid + "\">Revision " + revision.id + "</option>");
@@ -755,7 +764,7 @@ function RightPanel(cd, main, project, projectPage) {
 				}
 			});
 		});
-		
+
 		othis.tabChanger.changeTab($(".extendedDataLink"), "extendeddatalist.html", $(".extendeddatacontainer"), function(){
 			// TODO optional?
 			if (edid == null) {
@@ -773,7 +782,7 @@ function RightPanel(cd, main, project, projectPage) {
 			}
 		}, callback);
 	};
-	
+
 	this.loadRevisions = function(callback) {
 		othis.tabChanger.changeTab($(".revisionsLink"), null, cd.find(".revisions"), function(){
 			Global.bimServerApi.call("ServiceInterface", "getAllRevisionsOfProject", {poid: othis.project.oid}, function(data){
@@ -834,7 +843,7 @@ function RightPanel(cd, main, project, projectPage) {
 			$(".services .details").show();
 			if (oauth == true) {
 				othis.loadServices();
-				
+
 //				$(".services .details").load("addservice3.html", function(){
 //					var history = History.getState().data;
 //					Global.bimServerApi.call("ServiceInterface", "getServiceDescriptor", {
@@ -935,7 +944,7 @@ function RightPanel(cd, main, project, projectPage) {
 		var revision = $(this).parents("tr").andSelf().data("revision");
 		main.showDownloadCheckoutPopup(revision.projectId, revision.oid);
 	};
-	
+
 	this.reloadProject = function(poid, roid) {
 		if (poid == null) {
 			poid = othis.project.oid;
@@ -952,11 +961,13 @@ function RightPanel(cd, main, project, projectPage) {
 			}
 		});
 	};
-	
+
+
+
 	this.addServiceClick = function(clickInitiated) {
 		main.showAddService(othis.project, null, true);
 	};
-	
+
 	this.updateProject = function(clickInitiated) {
 		Global.bimServerApi.registerNewRevisionOnSpecificProjectHandler(othis.project.oid, othis.newRevisionOnSpecificProjectHandler);
 //		if (othis.project.lastRevisionId != -1) {
@@ -976,7 +987,7 @@ function RightPanel(cd, main, project, projectPage) {
 				}
 			});
 		});
-		
+
 		cd.find(".detailsTable tbody").empty();
 		cd.find(".detailsTable tbody").append("<tr><td>Name</td><td>" + othis.project.name + "</td></tr>");
 		cd.find(".detailsTable tbody").append("<tr><td>UUID</td><td>" + othis.project.uuid + "</td></tr>");
@@ -1007,7 +1018,7 @@ function RightPanel(cd, main, project, projectPage) {
 			othis.loadHistory(clickInitiated);
 		}
 	};
-	
+
 	this.loadHistory = function(clickInitiated) {
 		var history = History.getState().data;
 		if (history.tab == "details") {
@@ -1054,25 +1065,25 @@ function RightPanel(cd, main, project, projectPage) {
 		}
 		cd.find(".content").show();
 	};
-	
+
 	this.loadBrowser = function(callback, pushhistory) {
 		var form = $("<form class=\"form-horizontal\" role=\"form\">");
-		
+
 		var fg = $("<div class=\"form-group\" style=\"margin-bottom: 0\">");
-		
+
 		form.append(fg);
-		
+
 		var col = $("<label class=\"col-xs-4 control-label\" style=\"text-align: left\">");
 		col.append("Showing data for ");
 		fg.append(col);
-		
+
 		var select = $("<select class=\"form-control\">");
 		col = $("<div class=\"col-xs-4\">");
 		col.append(select);
 		fg.append(col);
-		
+
 		$(".browser .message").html(form);
-		
+
 		select.change(function(){
 			Global.bimServerApi.call("ServiceInterface", "getRevision", {roid: $(this).val()}, function(revision){
 				othis.selectedRevision = revision;
@@ -1085,7 +1096,7 @@ function RightPanel(cd, main, project, projectPage) {
 				});
 			});
 		});
-		
+
 		Global.bimServerApi.call("ServiceInterface", "getAllRevisionsOfProject", {poid: othis.project.oid}, function(data){
 			data.forEach(function(revision){
 				var option = $("<option value=\"" + revision.oid + "\">Revision " + revision.id + "</option>");
@@ -1110,22 +1121,22 @@ function RightPanel(cd, main, project, projectPage) {
 
 	this.loadQuery = function(callback) {
 		var form = $("<form class=\"form-horizontal\" role=\"form\">");
-		
+
 		var fg = $("<div class=\"form-group\" style=\"margin-bottom: 0\">");
-		
+
 		form.append(fg);
-		
+
 		var col = $("<label class=\"col-xs-4 control-label\" style=\"text-align: left\">");
 		col.append("Querying ");
 		fg.append(col);
-		
+
 		var select = $("<select class=\"form-control\">");
 		col = $("<div class=\"col-xs-4\">");
 		col.append(select);
 		fg.append(col);
-		
+
 		$(".query .message").html(form);
-		
+
 		select.change(function(){
 			Global.bimServerApi.call("ServiceInterface", "getRevision", {roid: $(this).val()}, function(revision){
 				othis.selectedRevision = revision;
@@ -1135,7 +1146,7 @@ function RightPanel(cd, main, project, projectPage) {
 				}, callback);
 			});
 		});
-		
+
 		Global.bimServerApi.call("ServiceInterface", "getAllRevisionsOfProject", {poid: othis.project.oid}, function(data){
 			data.forEach(function(revision){
 				var option = $("<option value=\"" + revision.oid + "\">Revision " + revision.id + "</option>");
@@ -1148,7 +1159,7 @@ function RightPanel(cd, main, project, projectPage) {
 				}
 			});
 		});
-		
+
 		othis.tabChanger.changeTab($(".queryLink"), "query.html", $(".query .querycontainer"), function(){
 			pushHistory({page: "Project", poid: othis.project.oid, tab: "query"}, "Project");
 			$(".query").show();
@@ -1177,10 +1188,30 @@ function RightPanel(cd, main, project, projectPage) {
 		}, callback);
 	};
 
+
+	this.showNavigationGraph = function(callback) {
+			othis.tabChanger.changeTab($(".navgraph"), "navigationGraph.html", $(".navgraphview"), function(){
+			pushHistory({page: "Project", poid: othis.project.oid, tab: "Navigation Graph"}, "Project");
+			console.log(othis.navgraph);
+			if( othis.navgraph == null){
+				othis.navgraph = new NavigationGraph($(this), main, othis.project.poid);
+			}
+			othis.navgraph.draw(document.getElementById('navgraphcontainer'));
+			othis.navgraph.getNavigationPlan(othis.project.oid,othis.project.roid);
+			return othis.navgraph;
+		}, callback);
+
+	};
+
+	cd.find(".navgraph").click(function(){othis.showNavigationGraph();});
+
+
+
+
 	this.addSubProjectClick = function(event) {
 		main.showAddProject(null, othis.project, true);
 	};
-	
+
 	this.addUserLinkClick = function() {
 		Global.bimServerApi.call("ServiceInterface", "getAllNonAuthorizedUsersOfProject", {poid: othis.project.oid}, function(data){
 			cd.find(".addUserToProjectDiv select option").remove();
@@ -1209,7 +1240,7 @@ function RightPanel(cd, main, project, projectPage) {
 			othis.addUserLinkClick();
 		});
 	};
-	
+
 	this.addModelCheckerButtonClick = function(){
 		if (cd.find(".modelCheckerSelect").is(":visible")) {
 			Global.bimServerApi.call("ServiceInterface", "addModelCheckerToProject", {
@@ -1229,9 +1260,10 @@ function RightPanel(cd, main, project, projectPage) {
 			});
 		}
 	};
-	
+
 	cd.find(".detailsLink").click(function(){othis.loadDetails(null, true)});
 	cd.find(".subprojectsLink").click(function(){othis.loadSubProjects(null, true);});
+
 	cd.find(".revisionsLink").click(function(){othis.loadRevisions(null, true);});
 	cd.find(".checkoutsLink").click(function(){othis.loadCheckouts(null, true);});
 	cd.find(".servicesLink").click(function(){othis.loadServices(null, true);});
@@ -1284,5 +1316,11 @@ function RightPanel(cd, main, project, projectPage) {
 	});
 	
 	cd.find(".addExtendedDataButton").click(othis.addExtendedDataButtonClick);
+
+
+
+
+
+
 }
 </script>

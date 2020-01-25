@@ -1,71 +1,82 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opensourcebim</groupId>
-  <artifactId>bimviews</artifactId>
-  <version>0.0.182-SNAPSHOT</version>
-  <name>BIMvie.ws</name>
-  <description>bimvie.ws</description>
-  <url>https://github.com/opensourceBIM/bimvie.ws</url>
+  <groupId>com.buildinnov.smartevac</groupId>
+  <artifactId>smartevac-view</artifactId>
+  <version>0.0.1</version>
+  <name>SmartEvacView</name>
+  <description>SmartEvacView</description>
   <organization>
-    <name>OpenSource BIM</name>
-    <url>opensourcebim.org</url>
+    <name>BuildInnov</name>
+    <url>>buildinnov.com</url>
   </organization>
   <licenses>
     <license>
-      <name>GNU Affero General Public License</name>
-      <url>http://www.gnu.org/licenses/agpl-3.0.en.html</url>
-      <distribution>repo</distribution>
+      <name>MIT</name>
+      <url></url>
+      <distribution></distribution>
     </license>
   </licenses>
   <developers>
     <developer>
-      <name>Ruben de Laat</name>
-      <email>ruben@logic-labs.nl</email>
+      <name>Bouzid MEDJDOUB</name>
+      <email>cb_medjdoub@esi.dz</email>
     </developer>
+
   </developers>
-  <scm>
-    <connection>scm:git:https://github.com/opensourceBIM/bimvie.ws.git</connection>
-    <developerConnection>scm:git:https://github.com/opensourceBIM/bimvie.ws.git</developerConnection>
-    <tag>bimviews-0.0.168</tag>
-    <url>https://github.com/opensourceBIM/bimvie.ws.git</url>
-  </scm>
-  <issueManagement>
-    <system>GitHub</system>
-    <url>https://github.com/opensourceBIM/bimvie.ws/issues</url>
-  </issueManagement>
-  <distributionManagement>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
-  <properties>
-    <project.scm.id>github</project.scm.id>
-    <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ssZ</maven.build.timestamp.format>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <timestamp>${maven.build.timestamp}</timestamp>
-  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.opensourcebim</groupId>
       <artifactId>pluginbase</artifactId>
-      <version>1.5.181-SNAPSHOT</version>
+      <version>1.5.180</version>
     </dependency>
   </dependencies>
   <build>
     <resources>
       <resource>
-        <targetPath>.</targetPath>
-        <directory>../../output</directory>
+        <targetPath>css</targetPath>
+        <directory>css</directory>
+      </resource>
+
+      <resource>
+        <targetPath>deps</targetPath>
+        <directory>deps</directory>
+      </resource>
+
+      <resource>
+        <targetPath>js</targetPath>
+        <directory>js</directory>
+        <excludes>
+          <exclude>settings.js</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <targetPath>img</targetPath>
+        <directory>img</directory>
+      </resource>
+      <resource>
+        <targetPath>fonts</targetPath>
+        <directory>fonts</directory>
+      </resource>
+      <resource>
+        <targetPath>js</targetPath>
+        <directory>js</directory>
+      </resource>
+      <resource>
+        <targetPath>css</targetPath>
+        <directory>css</directory>
+      </resource>
+      <resource>
+        <directory>.</directory>
         <includes>
-          <include>**/*</include>
+          <include>*.html</include>
         </includes>
+      </resource>
+      <resource>
+        <targetPath>plugin</targetPath>
+        <filtering>true</filtering>
+        <directory>plugin</directory>
       </resource>
       <resource>
         <targetPath>js</targetPath>
@@ -131,9 +142,6 @@
           <useReleaseProfile>false</useReleaseProfile>
           <releaseProfiles>release</releaseProfiles>
           <goals>deploy</goals>
-          <checkModificationExcludes>
-            <checkModificationExclude>index.html</checkModificationExclude>
-          </checkModificationExcludes>
         </configuration>
       </plugin>
     </plugins>
@@ -145,7 +153,7 @@
         <plugins>
           <plugin>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>

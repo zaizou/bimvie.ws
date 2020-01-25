@@ -22,8 +22,8 @@
 	</div>
 	<script type="module">
 		/* The following two lines are modified during the build, the imports as defined here work for running BIMvie.ws on a local-dev station within BIMserver */
-		import {BimServerClient} from '../bimserverjavascriptapi/bimserverclient.js';
-		import {BimServerApiPromise} from '../bimserverjavascriptapi/bimserverapipromise.js';
+		import {BimServerClient} from './deps/bimserverjsapi/bimserverclient.js';
+		import {BimServerApiPromise} from './deps/bimserverjsapi/bimserverapipromise.js';
 
 		window.BimServerClient = BimServerClient;
 		window.BimServerApiPromise = BimServerApiPromise;
@@ -44,6 +44,10 @@
 		if (window.Global.baseDir.substring(window.Global.baseDir.length - 1) != "/") {
 			window.Global.baseDir = window.Global.baseDir + "/";
 		}
+
+
+
+
 		var baseJsDir = window.Global.baseDir + "js/";
 		var baseCssDir = window.Global.baseDir + "css/";
 		
@@ -71,8 +75,15 @@
 			myRequest.open("GET", address + "/plugin.version", true);
 			myRequest.send();
 		}
-		
+
+
 		function loadBimSurfer() {
+			Settings.getBimSurferApiAddress = function() {
+				return window.Global.baseDir +"deps/bimsurfer-v1/"
+			};
+
+			console.log(Settings.getBimSurferApiAddress());
+
 			var p = new Promise((resolve, reject) => {
 	    		if (Settings.useBimSurfer()) {
 	    			getPluginVersion(Settings.getBimSurferApiAddress(), function(apiVersion){
@@ -299,7 +310,7 @@
 		} else {
 			// Return a default
 			console.log(document.location);
-			return "http://localhost:8080";
+			return "http://localhost:8080/bimserverwar";
 		}
 	}		    			
 

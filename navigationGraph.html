@@ -1,0 +1,162 @@
+<div class="navgraphcontainer" id="navgraphcontainer">
+	<h1>It's a test</h1>
+	<div class="row">
+		<div class="col-md-4 navigatorWrapper">
+		</div>
+		<div class="col-md-8 rightCol">
+			<div class="rightpanel ih"></div>
+		</div>
+	</div>
+
+</div>
+<script type="text/javascript" src="deps/mxClient.min.js"></script>
+<script>
+
+function NavigationGraph(containerDiv, main, project) {
+	var othis = this;
+	othis.loaded = {}; // poid -> roid
+	othis.models = {};
+	othis.main = main;
+	
+	othis.threeDAspectVisible = new Variable(false);
+	othis.selectListeners = new EventRegistry();
+	othis.unselectListeners = new EventRegistry();
+	othis.objectVisibilityListeners = new EventRegistry();
+	othis.modelLoadedListeners = new EventRegistry();
+	othis.modelAddedListeners = new EventRegistry();
+	othis.modelUnloadedListeners = new EventRegistry();
+	othis.menuItems = [];
+
+
+	this.getName = function(){
+		return "Navigation Graph";
+	};
+
+	this.show = function(clickInitiated) {
+		if (typeof project == "number" || typeof project == "string") {
+			othis.reloadProject(project, project.lastRevisionId);
+		} else {
+			othis.project = project;
+			othis.updateProject(clickInitiated);
+		}
+	};
+
+	this.load = function(){
+	};
+
+
+
+	this.draw = function(container)
+	{
+		// Checks if the browser is supported
+		if (!mxClient.isBrowserSupported())
+		{
+			// Displays an error message if the browser is not supported.
+			mxUtils.error('Browser is not supported!', 200, false);
+		}
+		else
+		{
+			mxConstants.SHADOWCOLOR = '#c0c0c0';
+
+			// Creates the graph inside the given container
+			if(this.graph != null) {
+				this.graph.getModel().beginUpdate();
+				this.graph.getModel().endUpdate();
+			}
+			else {
+				this.graph = new mxGraph(container);
+				// No size handles, please...
+
+				this.graph.setCellsResizable(false);
+				this.graph.refresh()
+
+				// Makes all cells round with a white, bold label
+				var style = this.graph.stylesheet.getDefaultVertexStyle();
+				style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
+				style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
+				style[mxConstants.STYLE_FONTCOLOR] = 'white';
+				style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
+				style[mxConstants.STYLE_FONTSTYLE] = mxConstants.FONT_BOLD;
+				style[mxConstants.STYLE_FONTSIZE] = 14;
+				style[mxConstants.STYLE_SHADOW] = true;
+
+				// Makes all edge labels gray with a white background
+				style = this.graph.stylesheet.getDefaultEdgeStyle();
+				style[mxConstants.STYLE_FONTCOLOR] = 'gray';
+				style[mxConstants.STYLE_FONTSTYLE] = mxConstants.FONT_BOLD;
+				style[mxConstants.STYLE_FONTCOLOR] = 'black';
+				style[mxConstants.STYLE_STROKEWIDTH] = 2;
+
+				// Enables rubberband selection
+				new mxRubberband(this.graph);
+
+				// Gets the default parent for inserting new cells. This
+				// is normally the first child of the root (ie. layer 0).
+				var parent = this.graph.getDefaultParent();
+
+				// Adds cells to the target model in a single step
+				// using custom ids for the vertices and edges
+				var w = 40;
+				var h = 40;
+
+				this.graph.getModel().beginUpdate();
+				try {
+					var a = this.graph.insertVertex(parent, 'a', 'A', 20, 20, w, h, 'fillColor=blue');
+					var b = this.graph.insertVertex(parent, 'b', 'B', 20, 200, w, h, 'fillColor=blue');
+					var c = this.graph.insertVertex(parent, 'c', 'C', 200, 20, w, h, 'fillColor=red');
+					var d = this.graph.insertVertex(parent, 'd', 'D', 200, 200, w, h, 'fillColor=red');
+					var ac = this.graph.insertEdge(parent, 'ac', 'ac', a, c, 'strokeColor=blue;verticalAlign=bottom');
+					var ad = this.graph.insertEdge(parent, 'ad', 'ad', a, d, 'strokeColor=blue;align=left;verticalAlign=bottom');
+					var bd = this.graph.insertEdge(parent, 'bd', 'bd', b, d, 'strokeColor=blue;verticalAlign=bottom');
+				} finally {
+					// Updates the display
+					this.graph.getModel().endUpdate();
+				}
+
+				// Creates the second graph model (without a container)
+				var graph2 = new mxGraph();
+
+				// Gets the default parent for inserting new cells. This
+				// is normally the first child of the root (ie. layer 0).
+				var parent2 = graph2.getDefaultParent();
+
+				// Adds cells to the target model in a single step
+				// using custom ids for the vertices
+				graph2.getModel().beginUpdate();
+				try {
+					var c = graph2.insertVertex(parent2, 'c', 'C', 200, 20, w, h, 'fillColor=green');
+					var d = graph2.insertVertex(parent2, 'd', 'D', 200, 200, w, h, 'fillColor=green');
+					var e = graph2.insertVertex(parent2, 'e', 'E', 400, 20, w, h, 'fillColor=green');
+					var f = graph2.insertVertex(parent2, 'f', 'F', 400, 200, w, h, 'fillColor=green');
+					var ce = graph2.insertEdge(parent2, 'ce', 'ce', c, e, 'strokeColor=green;verticalAlign=bottom');
+					var ed = graph2.insertEdge(parent2, 'ed', 'ed', e, d, 'strokeColor=green;align=right;verticalAlign=bottom');
+					var fd = graph2.insertEdge(parent2, 'bd', 'fd', f, d, 'strokeColor=green;verticalAlign=bottom');
+				} finally {
+					// Updates the display
+					graph2.getModel().endUpdate();
+				}
+
+				// Merges the model from the second graph into the model of
+				// the first graph. Note: If you add a false to the parameter
+				// list then _not_ all edges will be cloned, that is, the
+				// edges are assumed to have an identity, and hence the edge
+				// "bd" will be changed to point from f to d, as specified in
+				// the edge for the same id in the second graph.
+				this.graph.getModel().mergeChildren(parent2, parent/*, false*/);
+			}
+		}
+	}
+
+
+
+	this.getNavigationPlan = function(poid,roid){
+		Global.bimServerApi.call("NavigationPlanExtractionInterface", "getNavigationPlan", {poid: poid,roid:roid}, function(result){
+			console.log(result);
+		},function (error) {
+				console.log(error);
+		});
+	};
+
+
+}
+</script>

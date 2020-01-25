@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.opensourcebim:pluginbase:1.5.180">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/opensourcebim/pluginbase/1.5.180/pluginbase-1.5.180.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/opensourcebim/pluginbase/1.5.180/pluginbase-1.5.180-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/opensourcebim/pluginbase/1.5.180/pluginbase-1.5.180-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
